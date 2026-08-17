@@ -10,6 +10,7 @@ import { ContactForm } from "@/components/site/ContactForm";
 import { Faq } from "@/components/site/Faq";
 import { Footer } from "@/components/site/Footer";
 import { WhatsAppFloat } from "@/components/site/WhatsAppFloat";
+import { Reveal } from "@/components/site/Reveal";
 
 const title = "Mise en relation France–Portugal | Partenaires à Porto";
 const description =
@@ -45,13 +46,13 @@ function Index() {
       <Header />
       <main>
         <Hero />
-        <Problems />
-        <Solution />
-        <Sectors />
-        <Advantages />
-        <About />
-        <ContactForm />
-        <Faq />
+        <Reveal><Problems /></Reveal>
+        <Reveal><Solution /></Reveal>
+        <Reveal><Sectors /></Reveal>
+        <Reveal><Advantages /></Reveal>
+        <Reveal><About /></Reveal>
+        <Reveal><ContactForm /></Reveal>
+        <Reveal><Faq /></Reveal>
       </main>
       <Footer />
       <WhatsAppFloat />
