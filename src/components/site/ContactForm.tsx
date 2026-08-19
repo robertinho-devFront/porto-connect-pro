@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Clock, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { trackEvent } from "@/lib/analytics";
 
 const SECTEURS = [
   "Industrie",
@@ -64,10 +65,39 @@ function Field({
 export function ContactForm() {
   const [sent, setSent] = useState(false);
   const [consent, setConsent] = useState(false);
+  const started = useRef(false);
+
+  const handleStart = () => {
+    if (started.current) return;
+    started.current = true;
+    trackEvent("contact_form_start", { form: "contact" });
+  };
+
+  const handleConsent = (value: boolean) => {
+    setConsent(value);
+    if (value) trackEvent("contact_form_consent", { form: "contact", consent: true });
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const meta = {
+      form: "contact",
+      secteur: String(data.get("secteur") ?? ""),
+      besoin: String(data.get("besoin") ?? ""),
+      budget: String(data.get("budget") ?? ""),
+      delai: String(data.get("delai") ?? ""),
+    };
+
+    trackEvent("contact_form_submit", meta);
+
+    if (!consent) {
+      trackEvent("contact_form_error", { ...meta, reason: "consent_missing" });
+      return;
+    }
+
     setSent(true);
+    trackEvent("contact_form_success", { ...meta, consent: true });
   };
 
   return (
@@ -109,7 +139,12 @@ export function ContactForm() {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate={false}>
+            <form
+              onSubmit={handleSubmit}
+              onFocusCapture={handleStart}
+              className="space-y-5"
+              noValidate={false}
+            >
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field id="nom" label="Nom">
                   <Input id="nom" name="nom" autoComplete="family-name" required />
@@ -185,7 +220,7 @@ export function ContactForm() {
                 <Checkbox
                   id="rgpd"
                   checked={consent}
-                  onCheckedChange={(v) => setConsent(v === true)}
+                  onCheckedChange={(v) => handleConsent(v === true)}
                   required
                   aria-required="true"
                 />
