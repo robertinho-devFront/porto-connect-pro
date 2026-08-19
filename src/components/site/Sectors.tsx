@@ -43,7 +43,7 @@ export function Sectors() {
           {SECTORS.map(({ icon: Icon, label }) => (
             <li
               key={label}
-              className="group rounded-md border border-border bg-card p-5 transition-colors hover:border-copper/60"
+              className="group hover-lift rounded-md border border-border bg-card p-5 hover:border-copper/60"
             >
               <Icon
                 className="size-5 text-steel transition-colors group-hover:text-copper"

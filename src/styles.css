@@ -178,6 +178,41 @@
   position: relative;
 }
 
+/* Animations "éco" : uniquement CSS, déclenchées à l'interaction,
+   sur les propriétés composées (transform / opacity). */
+@utility link-underline {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 1px;
+    background-color: var(--color-copper);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+@utility hover-lift {
+  transition:
+    transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 250ms ease;
+  will-change: transform;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+
 @layer components {
   .reveal {
     opacity: 0;
@@ -229,6 +264,9 @@
   }
   .reveal {
     opacity: 1 !important;
+    transform: none !important;
+  }
+  .hover-lift:hover {
     transform: none !important;
   }
   *,
