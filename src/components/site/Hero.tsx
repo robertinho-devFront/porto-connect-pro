@@ -55,13 +55,13 @@ export function Hero() {
         </div>
 
         <div className="relative">
-          <div className="absolute -left-4 -top-4 hidden h-24 w-24 animate-soft-float border-l-2 border-t-2 border-copper/60 lg:block" />
+          <div className="absolute -left-4 -top-4 hidden h-24 w-24 border-l-2 border-t-2 border-copper/60 lg:block" />
           <img
             src={heroImage}
             alt="Immeuble de bureaux contemporain dans un quartier d'affaires de la région de Porto"
             width={1280}
             height={1600}
-            className="relative aspect-[4/5] w-full animate-fade-up rounded-md object-cover shadow-[var(--shadow-card)] transition-transform duration-700 hover:scale-[1.01]"
+            className="relative aspect-[4/5] w-full animate-fade-up rounded-md object-cover shadow-[var(--shadow-card)]"
             style={{ animationDelay: "200ms" }}
           />
         </div>
