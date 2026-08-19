@@ -1,29 +1,34 @@
-# Welcome to your Lovable project
+# Ponte Atlântica — Site vitrine France · Portugal
 
-This project was built with [Lovable](https://lovable.dev).
+Site vitrine de génération de prospects pour la mise en relation entre entreprises françaises
+et entreprises portugaises de la région de Porto.
 
-## Build with Lovable
+## Stack
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+- TanStack Start (React 19, Vite)
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui + lucide-react
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Développement
 
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Prérequis : Node.js 20+ et npm.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
 
-## Built with
+## Scripts
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+- `npm run dev` — serveur de développement
+- `npm run build` — build de production
+- `npm run preview` — prévisualisation du build
+- `npm run lint` — analyse statique
+- `npm run format` — formatage Prettier
+
+## Structure
+
+- `src/routes/` — pages (accueil, mentions légales, politique de confidentialité)
+- `src/components/site/` — sections du site (hero, problèmes, solution, secteurs, FAQ, contact…)
+- `src/styles.css` — design system (couleurs, typographies, animations)
