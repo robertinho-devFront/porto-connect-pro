@@ -23,8 +23,14 @@ export function Advantages() {
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {ITEMS.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="border-t border-primary-foreground/20 pt-6">
-              <Icon className="size-6 text-copper" aria-hidden="true" />
+            <div
+              key={title}
+              className="group hover-lift border-t border-primary-foreground/20 pt-6 hover:border-copper/70"
+            >
+              <Icon
+                className="size-6 text-copper transition-transform duration-300 group-hover:scale-110"
+                aria-hidden="true"
+              />
               <h3 className="mt-5 text-lg font-semibold">{title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-primary-foreground/75">{text}</p>
             </div>
