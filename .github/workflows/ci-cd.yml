@@ -1,0 +1,110 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  quality:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run lint
+      - name: Typecheck
+        run: bunx tsc --noEmit
+
+  build:
+    name: Build
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Build production bundle
+        run: bun run build
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: |
+            .output
+            dist
+          if-no-files-found: warn
+          retention-days: 7
+
+  deploy-staging:
+    name: Deploy (staging)
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-build
+      - name: Deploy to staging
+        id: deploy
+        env:
+          DEPLOY_TOKEN: ${{ secrets.STAGING_DEPLOY_TOKEN }}
+        run: |
+          echo "Déploiement du build sur l'environnement de staging."
+          # Remplacer par la commande de votre hébergeur, par ex. :
+          # bunx wrangler deploy --env staging
+          # bunx vercel deploy --prebuilt --token "$DEPLOY_TOKEN"
+          echo "url=https://staging.example.com" >> "$GITHUB_OUTPUT"
+
+  smoke-test-staging:
+    name: Smoke test (staging)
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier que le staging répond
+        run: |
+          URL="${{ needs.deploy-staging.outputs.url || 'https://staging.example.com' }}"
+          echo "Ping $URL"
+          # curl -fsS --retry 5 --retry-delay 5 "$URL" > /dev/null
+
+  deploy-production:
+    name: Deploy (production)
+    needs: smoke-test-staging
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-build
+      - name: Deploy to production
+        id: deploy
+        env:
+          DEPLOY_TOKEN: ${{ secrets.PRODUCTION_DEPLOY_TOKEN }}
+        run: |
+          echo "Déploiement du build sur l'environnement de production."
+          # bunx wrangler deploy --env production
+          # bunx vercel deploy --prebuilt --prod --token "$DEPLOY_TOKEN"
+          echo "url=https://www.example.com" >> "$GITHUB_OUTPUT"
